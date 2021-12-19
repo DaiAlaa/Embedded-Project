@@ -78,12 +78,12 @@ void loop()
   int statusSensor = digitalRead (IRSensor);
   lcd.setCursor(0, 0);
   if (millis()-scanMillis > 3000 ){
+    digitalWrite(RED_PIN, LOW);
+    digitalWrite(GREEN_PIN, LOW);
     if (statusSensor == 1 || passed)
     {
       lcd.print("Welcome!      ");
       SG90_Servo.write(0);
-      digitalWrite(RED_PIN, LOW);
-      digitalWrite(GREEN_PIN, LOW);
       passed = false;
     }
     
@@ -102,7 +102,6 @@ void loop()
       
         String s = getCardID(mfrc522);
         
-              //Serial.println("La"+BlueCard+"La");
         scanMillis = millis();
         if(s == BlueCard){
           Serial.println("correct access");
