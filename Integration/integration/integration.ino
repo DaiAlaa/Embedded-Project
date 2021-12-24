@@ -9,7 +9,7 @@ LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 
 ///////// IR pins  //////////
 int IRSensor = 2; // connect ir sensor to arduino pin 2
-
+int IRSensorClose=4; // connect ir sensor to arduino pin 2
 ////////// RFID ///////////
 #include <SPI.h>
 #include <MFRC522.h>
@@ -52,7 +52,7 @@ void setup()
   pinMode (IRSensor, INPUT); // sensor pin INPUT
   pinMode (RED_PIN, OUTPUT); // Led pin OUTPUT
   pinMode (GREEN_PIN, OUTPUT); // Led pin OUTPUT
-
+  pinMode (IRSensorClose, INPUT); // sensor pin INPUT
   //////// LCD setup  ////////
   // set up the LCD's number of columns and rows:
   lcd.begin(16, 2);
@@ -76,8 +76,13 @@ void setup()
 void loop()
 {
   int statusSensor = digitalRead (IRSensor);
+  int closeStatusSensor=digitalRead(IRSensorClose);
   lcd.setCursor(0, 0);
-  if (millis()-scanMillis > 3000 ){
+  if(!closeStatusSensor){
+      lcd.print("busy!            ");
+      SG90_Servo.write(0);
+  }
+  else if (millis()-scanMillis > 3000 ){
     digitalWrite(RED_PIN, LOW);
     digitalWrite(GREEN_PIN, LOW);
     if (statusSensor == 1 || passed)
