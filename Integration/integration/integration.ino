@@ -26,7 +26,7 @@ Servo SG90_Servo;  // Define an instance of of Servo with the name of "SG90_Serv
 
 String BlueCard = " 167 238 66 178";
 double scanMillis;
-bool passed = true;
+bool passed = false;
 
 MFRC522 mfrc522(SS_PIN, RST_PIN);  // Create MFRC522 instance
 
@@ -68,7 +68,8 @@ void setup()
 
   //////// servo setup ///////
   SG90_Servo.attach(Servo_PWM);
-  
+  SG90_Servo.write(0);
+  lcd.print("Welcome!      ");
 }
 
 
@@ -79,20 +80,25 @@ void loop()
   int closeStatusSensor=digitalRead(IRSensorClose);
   lcd.setCursor(0, 0);
   if(!closeStatusSensor){
-      lcd.print("busy!            ");
-      SG90_Servo.write(0);
-  }
-  else if (millis()-scanMillis > 3000 ){
     digitalWrite(RED_PIN, LOW);
     digitalWrite(GREEN_PIN, LOW);
-    if (statusSensor == 1 || passed)
-    {
-      lcd.print("Welcome!      ");
+      lcd.print("busy!            ");
       SG90_Servo.write(0);
+      passed=false;
+  }
+  else {
+    
+    if (statusSensor == 1  && passed==false)
+    {
+      digitalWrite(RED_PIN, LOW);
+      digitalWrite(GREEN_PIN, LOW);
+      lcd.print("Welcome!      ");
+//      SG90_Servo.write(0);
       passed = false;
     }
     
-    else
+    else if(statusSensor == 0  && passed==false)
+    
     {
       lcd.print("Scan your card");
       // Reset the loop if no new card present on the sensor/reader. This saves the entire process when idle.
@@ -123,8 +129,9 @@ void loop()
           lcd.print("Faild         ");  
           SG90_Servo.write(0);
           digitalWrite(RED_PIN, HIGH);
-          
-  
+          while(millis()-scanMillis <3000);
+          digitalWrite(RED_PIN, LOW);
+
           
           }
   //      Serial.println("3aaaaaaaaaaa");
