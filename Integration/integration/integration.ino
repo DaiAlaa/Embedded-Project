@@ -61,14 +61,13 @@ void setup()
   while (!Serial);    // Do nothing if no serial port is opened (added for Arduinos based on ATMEGA32U4)
   SPI.begin();      // Init SPI bus
   mfrc522.PCD_Init();   // Init MFRC522
-  delay(4);       // Optional delay. Some board do need more time after init to be ready, see Readme
+//  delay(4);       // Optional delay. Some board do need more time after init to be ready, see Readme
   mfrc522.PCD_DumpVersionToSerial();  // Show details of PCD - MFRC522 Card Reader details
   Serial.println(F("Scan PICC to see UID, SAK, type, and data blocks..."));
 
   //////// servo setup ///////
   SG90_Servo.attach(Servo_PWM);
   SG90_Servo.write(0);
-  lcd.print("Welcome!      ");
 }
 
 
@@ -94,8 +93,6 @@ void loop()
       digitalWrite(RED_PIN, LOW);
       digitalWrite(GREEN_PIN, LOW);
       lcd.print("Welcome!      ");
-//      SG90_Servo.write(0);
-      passed = false;
     }
     
     // Car State --> there is a car in front of the gate
