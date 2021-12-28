@@ -27,11 +27,11 @@ MFRC522 mfrc522(SS_PIN, RST_PIN);  // Create MFRC522 instance
 #define Servo_PWM 6 // pin 6 of Arduino to provide PWM signal
 Servo SG90_Servo;  // Define an instance of of Servo with the name of "SG90_Servo"
 
-
+String s="";
 String BlueCard = " 167 238 66 178";    // Authenticated Card
 double scanMillis;
 bool passed = false;
-
+bool active=true;
 //////////// return card id ////////////
 String getCardID(MFRC522 object) {
   String cardId="";
@@ -78,7 +78,7 @@ void loop()
   int closeStatusSensor=digitalRead(IRSensorClose);
   lcd.setCursor(0, 0);
   // Exit State --> a car exits the gate. 
-  if(!closeStatusSensor){
+  if(!closeStatusSensor &&active==true){
     digitalWrite(RED_PIN, LOW);
     digitalWrite(GREEN_PIN, LOW);
       lcd.print("busy!            ");
@@ -88,7 +88,7 @@ void loop()
   else {
     
     // Idle state --> there is no car in front of the gate
-    if (statusSensor == 1  && passed==false)
+    if (statusSensor == 1  && passed==false &&active==true)
     {
       digitalWrite(RED_PIN, LOW);
       digitalWrite(GREEN_PIN, LOW);
@@ -96,23 +96,24 @@ void loop()
     }
     
     // Car State --> there is a car in front of the gate
-    else if(statusSensor == 0  && passed==false)
-    
-    {
-      lcd.print("Scan your card");
-      // Reset the loop if no new card present on the sensor/reader. This saves the entire process when idle.
-      if ( ! mfrc522.PICC_IsNewCardPresent()) {
-        return;
-      }
-      
-      // Select one of the cards
-      if ( ! mfrc522.PICC_ReadCardSerial()) {
-        return;
-      }
-      
-        String s = getCardID(mfrc522);
+    else if(statusSensor == 0  && passed==false){
+      if(active==true){
+        lcd.print("Scan your card");
+        // Reset the loop if no new card present on the sensor/reader. This saves the entire process when idle.
+        if ( ! mfrc522.PICC_IsNewCardPresent()) {
+          return;
+        }
         
-        scanMillis = millis();
+        // Select one of the cards
+        if ( ! mfrc522.PICC_ReadCardSerial()) {
+          return;
+        }
+      
+         s = getCardID(mfrc522);
+         scanMillis = millis();
+      
+      }
+      
         // Pass State --> Scanned authenticated card
         if(s == BlueCard){
           Serial.println("correct access");
@@ -123,16 +124,25 @@ void loop()
           passed = true;
   
         }
+      
         // Fail State --> Scanned unauthenticated card
         else{
-          Serial.println("incorrect access");
+//          Serial.println("incorrect access");
+          Serial.println(millis()-scanMillis );
           lcd.setCursor(0, 0);
           lcd.print("Faild         ");  
           SG90_Servo.write(0);
           digitalWrite(RED_PIN, HIGH);
-          while(millis()-scanMillis <3000);
-          digitalWrite(RED_PIN, LOW);
+          active=false;
+          
+          if (millis()-scanMillis >3000 ||digitalRead (IRSensor)==1){
+            active=true; 
+            Serial.println(active );
+            Serial.println(passed );
+            Serial.println(statusSensor );
+            digitalWrite(RED_PIN, LOW);
+          }
           }
     }
-  }
+}
 }
