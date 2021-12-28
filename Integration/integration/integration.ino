@@ -1,3 +1,6 @@
+///////// EEPROM //////////
+#include <EEPROM.h>
+int state=0;
 ///////// LCD //////////
 // include the library code:
 #include <LiquidCrystal.h>
@@ -66,8 +69,23 @@ void setup()
   Serial.println(F("Scan PICC to see UID, SAK, type, and data blocks..."));
 
   //////// servo setup ///////
-  SG90_Servo.attach(Servo_PWM);
-  SG90_Servo.write(0);
+  
+  
+
+  ///////// EEPROM //////////////
+  state=EEPROM.read(0);
+  Serial.print("state: ");
+  Serial.println(state);
+  if(state!=2){
+    SG90_Servo.attach(Servo_PWM);
+    SG90_Servo.write(0);
+    }
+    else {
+      Serial.println("print any key to continue");
+      while(!Serial.available());
+      SG90_Servo.attach(Servo_PWM);
+      SG90_Servo.write(0);
+      }
 }
 
 
@@ -77,27 +95,30 @@ void loop()
   int statusSensor = digitalRead (IRSensor);
   int closeStatusSensor=digitalRead(IRSensorClose);
   lcd.setCursor(0, 0);
-  // Exit State --> a car exits the gate. 
+  // Exit State --> a car exits the gate.  4
   if(!closeStatusSensor &&active==true){
     digitalWrite(RED_PIN, LOW);
     digitalWrite(GREEN_PIN, LOW);
       lcd.print("busy!            ");
       SG90_Servo.write(0);
       passed=false;
+      EEPROM.write(0, 4);
   }
   else {
     
-    // Idle state --> there is no car in front of the gate
+    // Idle state --> there is no car in front of the gate  0
     if (statusSensor == 1  && passed==false &&active==true)
     {
       digitalWrite(RED_PIN, LOW);
       digitalWrite(GREEN_PIN, LOW);
       lcd.print("Welcome!      ");
+      EEPROM.write(0, 0);
     }
     
-    // Car State --> there is a car in front of the gate
+    // Car State --> there is a car in front of the gate  1
     else if(statusSensor == 0  && passed==false){
       if(active==true){
+        EEPROM.write(0, 1);
         lcd.print("Scan your card");
         // Reset the loop if no new card present on the sensor/reader. This saves the entire process when idle.
         if ( ! mfrc522.PICC_IsNewCardPresent()) {
@@ -114,7 +135,7 @@ void loop()
       
       }
       
-        // Pass State --> Scanned authenticated card
+        // Pass State --> Scanned authenticated card  2
         if(s == BlueCard){
           Serial.println("correct access");
           lcd.setCursor(0, 0);
@@ -122,24 +143,21 @@ void loop()
           SG90_Servo.write(90);
           digitalWrite(GREEN_PIN, HIGH);
           passed = true;
+          EEPROM.write(0, 2);
   
         }
       
-        // Fail State --> Scanned unauthenticated card
+        // Fail State --> Scanned unauthenticated card 3
         else{
-//          Serial.println("incorrect access");
-          Serial.println(millis()-scanMillis );
+          Serial.println("incorrect access");
           lcd.setCursor(0, 0);
           lcd.print("Faild         ");  
           SG90_Servo.write(0);
           digitalWrite(RED_PIN, HIGH);
           active=false;
-          
+          EEPROM.write(0, 3);
           if (millis()-scanMillis >3000 ||digitalRead (IRSensor)==1){
             active=true; 
-            Serial.println(active );
-            Serial.println(passed );
-            Serial.println(statusSensor );
             digitalWrite(RED_PIN, LOW);
           }
           }
