@@ -1,13 +1,15 @@
 # Access control system
-It’s an access control system which checks if there is a car at the gate using an IR sensor.
-If yes, the system checks the driver card ID by using an RFID scanner. If it is authorized, the gate will open using a servo motor and the car will pass. 
-Also an LCD will print “pass” and a green LED will be on. If it isn’t authorized, the gate will not open and the LCD will print “failed” and a red LED will be on.
+It’s an access control system which checks if there is a car at the gate using an **IR sensor**.
+If yes, the system checks the driver card ID by using an **RFID scanner**. If it is authorized, the gate will open using a **servo motor** and the car will pass. 
+Also an **LCD** will print “pass” and a **green LED** will be on. If it isn’t authorized, the gate will not open and the LCD will print “failed” and a **red LED** will be on.
 ## List of used components:
 - IR sensor
 - RFID scanner
 - Servo motor
 - LCD
 - Arduino Uno
+- Green LED
+- Red LED
 
 ## Design models:
 ### 1. Wiring diagram
