@@ -13,11 +13,11 @@ Also an **LCD** will print “pass” and a **green LED** will be on. If it isn�
 
 ## Design models:
 ### 1. Wiring diagram
-![alt](https://drive.google.com/uc?export=view&id=1lh4NTBGpeUcTVLEoWNqAvCe0FE8Q0pfC)
+![alt](https://drive.google.com/uc?export=view&id=1ZUspvoLGkFwFD4qJY52iFbVR7dfb4v77)
 ### 2. Finite State Machine
-![alt](https://drive.google.com/uc?export=view&id=1-fh69O4-rr26Y6tQpgS831l4HruOTz-G)
+![alt](https://drive.google.com/uc?export=view&id=1Eoq0xWpUb7Km47memPRPvPphEnArBdXG)
 ### 3. Petri-nets Diagram
-![alt](https://drive.google.com/uc?export=view&id=1zgbLQtsZFtKLakEwusHlyBdoGGM32Ksk)
+![alt](https://drive.google.com/uc?export=view&id=1ajvXFiCJozKD-_acNaOd0X9f_7CMcVJX)
 - The system starts with one token in IDLE state, and we have 6 input states, that they can have tokens or not depending on user actions or sensor reads.
 - The 6 input states are ( IR1, IR2, Card True, Card False, Not IR1, Not IR2)
 
